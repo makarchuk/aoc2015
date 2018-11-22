@@ -1,0 +1,1 @@
+As a part of myself learning rust i've decided to do Advent of Code of 2015. So here it is
