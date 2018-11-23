@@ -31,37 +31,67 @@ impl Location {
     }
 }
 
-fn part1(input: &String) {
-    let mut loc = Location { x: 0, y: 0 };
-    let mut hs = HashSet::new();
-    hs.insert(loc);
-    for ch in input.chars() {
-        loc = loc.step(ch);
-        hs.insert(loc);
+struct Santa<I: Iterator<Item = char>> {
+    loc: Option<Location>,
+    route: I,
+}
+
+impl<I: Iterator<Item = char>> Santa<I> {
+    fn new(it: I) -> Santa<I> {
+        return Santa {
+            loc: None,
+            route: it,
+        };
     }
+}
+
+impl<I: Iterator<Item = char>> Iterator for Santa<I> {
+    type Item = Location;
+
+    fn next(&mut self) -> Option<Location> {
+        match self.loc {
+            None => {
+                self.loc = Some(Location { x: 0, y: 0 });
+                self.loc
+            }
+            Some(loc) => match self.route.next() {
+                Some(ch) => {
+                    let newloc = Some(loc.step(ch));
+                    self.loc = newloc;
+                    self.loc.clone()
+                }
+                None => None,
+            },
+        }
+    }
+}
+
+fn part1(input: &String) {
+    let mut hs = HashSet::new();
+    hs.extend(Santa::new(input.chars()));
     println!("Children with gifts: {}", hs.len());
 }
 
 fn part2(input: &String) {
-    let mut loc = Location { x: 0, y: 0 };
-    let mut robot_loc = Location { x: 0, y: 0 };
     let mut hs = HashSet::new();
-    hs.insert(loc);
-    for (i, ch) in input.char_indices() {
-        if i % 2 == 0 {
-            loc = loc.step(ch);
-            hs.insert(loc);
-        } else {
-            robot_loc = robot_loc.step(ch);
-            hs.insert(robot_loc);
-        }
-    }
+    hs.extend(Santa::new(
+        input
+            .char_indices()
+            .filter(|(i, _)| i % 2 == 0)
+            .map(|(_, ch)| ch),
+    ));
+    hs.extend(Santa::new(
+        input
+            .char_indices()
+            .filter(|(i, _)| i % 2 != 0)
+            .map(|(_, ch)| ch),
+    ));
     println!("Children with gifts: {}! Thanks to robot!", hs.len());
 }
 
 fn main() {
     let mut input = String::new();
-    io::stdin().read_to_string(&mut input);
+    io::stdin().read_to_string(&mut input).unwrap();
     part1(&input);
     part2(&input);
 }
