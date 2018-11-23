@@ -28,11 +28,9 @@ fn main() {
         .split("\n")
         .filter(|l| l.len() > 0)
         .map(|line| {
-            let dimensions: Vec<u32> = line
-                .split("x")
+            line.split("x")
                 .map(|x| -> u32 { x.parse().unwrap() })
-                .collect();
-            dimensions
+                .collect()
         }).collect();
     println!(
         "Total area is {}",
