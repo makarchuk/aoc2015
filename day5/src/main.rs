@@ -7,13 +7,14 @@ fn three_vowels(line: &str) -> bool {
 fn double_leter(line: &str) -> bool {
     //Something that never occurs in the string
     let mut last_char = '\n';
-    for ch in line.chars() {
+    line.chars().any(|ch| {
         if ch == last_char {
-            return true;
+            true
+        } else {
+            last_char = ch;
+            false
         }
-        last_char = ch;
-    }
-    return false;
+    })
 }
 
 fn blacklist(line: &str) -> bool {
